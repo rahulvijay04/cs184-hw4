@@ -1,0 +1,241 @@
+<html>
+	<head>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+		<style>
+			h1 {
+				text-align: center;
+			}
+
+			.container {
+				margin: 0 auto;
+				padding: 60px 20%;
+			}
+
+			figure {
+				text-align: center;
+			}
+
+			img {
+				display: inline-block;
+			}
+
+			body {
+				font-family: 'Inter', sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+		<h1>CS184/284A Spring 2025 Homework 4 Write-Up</h1>
+		<div style="text-align: center;">Names: Rahul Vijay</div>
+
+		<br>
+
+		Link to webpage: (TODO) <a href="https://rahulvijay04.github.io/sp25-hw4-rv19/">https://rahulvijay04.github.io/sp25-hw4-rv19/</a>
+
+		<br>
+
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw4-rv19">https://github.com/cal-cs184-student/sp25-hw4-rv19</a>
+
+		<!--
+		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
+		-->
+
+		<h2>Overview</h2>
+		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+
+		<h2>Part 1: Masses and springs</h2>
+		<p>
+			This cloth simulation represents fabric as a grid of point masses connected by springs, with each mass either movable or fixed depending on a "pinned" setting. Three spring types are used: structural (aligned with the grid), shear (diagonal), and bending (spanning longer distances). These springs apply forces based on Hooke’s Law, each with a unique rest length that reflects its position in the grid. Internal masses are typically linked to eight surrounding springs, so when displaced, they experience restoring forces that keep the system stable and realistic.
+		</p>
+		<div text-align="center">
+			<table style="width:100%">
+			<tr>
+				<td text-align="middle">
+				<img src="./images/Part1/no_shearing.png" width="600px" />
+				<figcaption text-align="middle">No shearing constraints</figcaption>
+				</td>
+				<td text-align="middle">
+				<img src="./images/Part1/shearing.png" width="600px" />
+				<figcaption text-align="middle">Shearing constraints</figcaption>
+				</td>
+			</tr>
+			</table>
+		</div>
+		<div text-align="center">
+			<table style="width:100%">
+			<tr>
+				<td text-align="middle">
+				<img src="./images/Part1/all_constraints.png" width="600px" />
+				<figcaption text-align="middle">All constraints</figcaption>
+				</td>
+			</tr>
+			</table>
+		</div>
+
+		<h2>Part 2: Simulation via numerical integration</h2>
+		</p>
+			Verlet Integration is used to update point mass positions in the cloth simulation. It combines Forward Euler with a constraint that prevents springs from stretching more than 10% beyond their rest length, improving stability but causing some energy loss. The simulation allows tuning of the spring constant (<em>ks</em>), mass (via density), and damping, which helps the cloth settle over time. Below are visual examples showing the effects of adjusting each parameter individually.
+		</p>
+		<p><b>SPRING CONSTANT:</b></p>
+		<p>
+			The spring constant, ks, affects the string's stiffness. When the spring constant increases, as shown in the images below, the cloth becomes less responsive to be shaped by gravity. As the spring constant increases, the cloth becomes stiff and closer to its original, flat shape.
+		</p>
+		<div text-align="center">
+		<table style="width:100%">
+			<tr>
+				<td text-align="middle">
+				<img src="./images/Part2/ks_low.png" width="600px" />
+				<figcaption text-align="middle">Low ks</figcaption>
+				</td>
+				<td text-align="middle">
+				<img src="./images/Part2/ks_high.png" width="600px" />
+				<figcaption text-align="middle">High ks</figcaption>
+				</td>
+			</tr>
+		</table>
+		</div>
+
+
+		<p><b>DENSITY:</b></p>
+		<p>
+			The density has a similar affect as the spring constant, affecting how responsive the cloth is to gravity. Contrary to the spring constant, though, density is a property of the point masses not the springs. A high density correlates with a more responsive cloth, since the point masses are heavier, so a higher force of gravity acts on it.
+		</p>
+		<div text-align="center">
+			<table style="width:100%">
+			<tr>
+			<td text-align="middle">
+				<img src="./images/Part2/dense_low.png" width="600px" />
+				<figcaption text-align="middle">Low Density</figcaption>
+			</td>
+			<td text-align="middle">
+				<img src="./images/Part2/dense_high.png" width="600px" />
+				<figcaption text-align="middle">High Density</figcaption>
+			</td>
+			</tr>
+		</table>
+		</div>
+
+		<p><b>DAMPING:</b> </p>
+		<p>Damping is not super noticeable in these two images, which were taken after giving the cloth time to settle. However, I did notice that damping made a significant difference in how quickly the simulation came to rest. High damping values cause the simulation to settle faster.</p>
+
+		<div text-align="center">
+			<table style="width:100%">
+			<tr>
+				<td text-align="middle">
+				<img src="./images/Part2/damp_0.png" width="600px" />
+				<figcaption text-align="middle">No damping</figcaption>
+				</td>
+				<td text-align="middle">
+				<img src="./images/Part2/damp_1.png" width="600px" />
+				<figcaption text-align="middle">1.0% Damping</figcaption>
+				</td>
+			</tr>
+			</table>
+		</div>
+
+		<p><b>FINAL SHADED CLOTH:</b> </p>
+		<div text-align="center">
+			<table style="width:100%">
+			<tr>
+				<td text-align="middle">
+				<img src="./images/Part2/pinned4.png" width="1200px" />
+				<figcaption text-align="middle">Shaded cloth at final resting state</figcaption>
+				</td>
+			</tr>
+			</table>
+		</div>
+
+		<h2>Part 3: Handling collisions with other objects</h2>
+		<p>For sphere collisions, I calculate the distance from the point mass to the sphere’s center. If it's inside the sphere, I project it back to the surface along the radial direction and apply a friction-adjusted correction based on its last position to simulate damping.</p>
+		<p>For plane collisions, I check if the point mass crossed the plane by testing for a sign change in the dot product with the normal. If a collision occurred, I compute the intersection point, nudge it slightly above the plane using a surface offset, and apply a similar friction-based correction.</p>
+		</p>
+		
+		 <div text-align="center">
+			 <table style="width:100%">
+			   <tr>
+				 <td text-align="middle">
+				   <img src="./images/Part3/sphere_collision.png" width="600px" />
+				   <figcaption text-align="middle">Collision with a sphere</figcaption>
+				 </td>
+				 <td text-align="middle">
+				   <img src="./images/Part3/plane_collision.png" width="600px" />
+				   <figcaption text-align="middle">Collision with a plane</figcaption>
+				 </td>
+			   </tr>
+			 </table>
+		</div>
+
+		<h2>Part 4: Handling self-collisions</h2>
+		<p>
+			To improve efficiency during self-collision detection, we use the idea that point masses located far apart in the simulation space are unlikely to interact. By dividing the 3D environment into a grid of voxels, we can map each point mass into a cell and limit collision checks to those mapped to the same voxel. A hash map is used to organize the point masses by voxel, using a key derived from the voxel's coordinates. To minimize key collisions, I use a hash function based on voxel coordinates:
+			\(\text{hash} = \bar{x} + \bar{y}^2 + \bar{z}^3\).
+		</p>
+		
+		<p>The collection of images below shows a time-lapse of a cloth simulation. Frames are sampled uniformly over a total time span. Throughout the sequence, the cloth consistently avoids intersecting itself. This behavior is enforced by a minimum separation threshold built into the simulation, which ensures point masses maintain a safe distance and prevents overlapping geometry.</p>
+		
+		<div text-align="center">
+		  <table style="width:100%">
+			 <tr>
+			   <td text-align="middle">
+				 <img src="./images/Part4/initial.png" width="600px" />
+				 <figcaption text-align="middle">Initial</figcaption>
+			   </td>
+			   <td text-align="middle">
+				 <img src="./images/Part4/50.png" width="600px" />
+				 <figcaption text-align="middle">50% of time span</figcaption>
+			   </td>
+			 </tr>
+			 <tr>
+			   <td text-align="middle">
+				 <img src="./images/Part4/75.png" width="600px" />
+				 <figcaption text-align="middle">75% of time span</figcaption>
+			   </td>
+			   <td text-align="middle">
+				 <img src="./images/Part4/100.png" width="600px" />
+				 <figcaption text-align="middle">100% of time span</figcaption>
+			   </td>
+			 </tr>
+		   </table>
+		</div>
+
+		<p>Varying the density of the cloth impacts how it behaves when falling. A higher density increases the mass of each point mass in the cloth, causing it to fall faster under gravity due to the greater downward force. As a result, the cloth displays more dramatic sagging or draping. Conversely, a lower density reduces the mass, leading to a slower fall, as the cloth is less affected by gravity.</p>
+
+		<p>A higher ks makes the springs stiffer, resulting in the cloth resisting gravity more. This means the cloth retains its shape better and doesn’t stretch as much. On the other hand, a lower ks results in a more flexible, softer cloth that stretches and bends more easily.</p>
+
+
+		<h2>Part 5: Shaders</h2>
+		<p>A shader program a less computationally intensive way to render objects. The vertex shader processes each vertex of a 3D object, transforming it into screen space and passing along data like normals and texture coordinates. The fragment shader then determines the color of each pixel by simulating how light interacts with the surface, factoring in lighting models and material properties. Together, they create realistic lighting and material effects, with the vertex shader handling geometry and the fragment shader applying shading and lighting to each pixel.</p>
+		
+		<p><b>BLINN-PHONG SHADING:</b></p>
+		<p>The Blinn-Phong shading model is a method for simulating how light interacts with surfaces in 3D rendering. It improves the traditional Phong model by using a halfway vector between the light direction and view direction to calculate specular reflection, making the calculations faster and more efficient. The model has three components: ambient light (background lighting), diffuse reflection (light scattered across the surface), and specular reflection (highlights based on the viewer’s angle), which together create a more realistic material appearance.</p>
+
+		<p>In Blinn-Phong, specular reflection is calculated using the angle between the halfway vector and the surface normal, rather than between the view direction and reflection direction as in the original Phong model. This adjustment allows for quicker calculations, especially in real-time rendering. The model can be adjusted for different materials using the shininess factor, which controls the intensity and size of the specular highlights.</p>
+
+		<div text-align="center">
+		<table style="width:100%">
+			<tr>
+			<td text-align="middle">
+				<img src="./images/Part5/ambient.png" width="600px" />
+				<figcaption text-align="middle">Ambient Component</figcaption>
+			</td>
+			<td text-align="middle">
+				<img src="./images/Part5/diffuse.png" width="600px" />
+				<figcaption text-align="middle">Diffuse Component</figcaption>
+			</td>
+			</tr>
+			<tr>
+			<td text-align="middle">
+				<img src="./images/Part5/specular.png" width="600px" />
+				<figcaption text-align="middle">Specular Component</figcaption>
+			</td>
+			<td text-align="middle">
+				<img src="./images/Part5/full_phong.png" width="600px" />
+				<figcaption text-align="middle">Entire Blinn-Phong Shading Model</br></figcaption>
+			</td>
+			</tr>
+		</table>
+		</div>
+	</body>
+</html>
